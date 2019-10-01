@@ -63,4 +63,38 @@ router.get('/:id/comments', (req, res) => {
     })
 })
 
+router.post('/:id/comments', (req, res) => {
+    const commentData = {...req.body, post_id: req.params.id };
+
+    Posts.findById(req.params.id) 
+        .then(post => {
+            if (!post) {
+                res.status(404).json({
+                    message: 'That post does not exist'
+                })
+            }
+        })
+        .catch(err => {
+            res.status(500).json({
+                message: 'Comment could not be saved'
+            })
+        })
+    
+        if (!req.body.text) {
+            res.status(400).json({
+                message: 'You did not type a comment, silly'
+            }) 
+        } else {
+                Posts.insertComment(commentData)
+                .then(comment => {
+                    res.status(201).json(commentData)
+                })
+                .catch(err => {
+                    res.status(500).json({
+                        message: 'Comment could not be saved'
+                    })
+                });
+            }
+})
+
 module.exports = router; // don't forget to export or nothing works
