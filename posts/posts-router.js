@@ -117,4 +117,31 @@ router.delete('/:id', (req, res) => {
     })
 })
 
+router.put('/:id', (req, res) => {
+    if (!req.body.title || !req.body.contents) {
+        res.status(400).json({
+            message: 'Provide a title and content'
+        })
+    } else {
+        Posts.update(req.params.id, req.body) 
+        .then(post => {
+            if (post) {
+                res.status(200).json({
+                    ...req.body.id,
+                    id: req.params.id
+                })
+            } else {
+                res.status(404).json({
+                    message: 'Post does not exist'
+                })
+            }
+        })
+        .catch(err => {
+            res.status(500).json({
+                message: 'Post could not be edited'
+            })
+        })
+    }
+})
+
 module.exports = router; // don't forget to export or nothing works
